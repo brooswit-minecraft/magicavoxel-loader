@@ -35,7 +35,7 @@ tasks.register('materializeVoxFixture') {
         // Filter, rather than split, so line wrapping in the reviewable hex fixture can never reach decodeHex.
         def hex = file('src/main/resources/assets/magicavoxelloader/vox/sample.vox.hex').text.replaceAll('[^0-9A-Fa-f]', '')
         def out = generatedResources.get().file('assets/magicavoxelloader/vox/sample.vox').asFile
-        out.parentFile.mkdirs(); out.bytes = hex.decodeHex()
+        out.parentFile.mkdirs(); out.bytes = java.util.HexFormat.of().parseHex(hex)
     }
 }
 sourceSets.main.resources.srcDir(generatedResources)
