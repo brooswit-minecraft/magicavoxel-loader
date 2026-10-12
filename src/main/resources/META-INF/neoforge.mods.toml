@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="MIT"
+[[mods]]
+modId="magicavoxelloader"
+version="${file.jarVersion}"
+displayName="MagicaVoxel Loader"
+description="Shared packaged .vox loader for NeoForge item models."
+[[dependencies.magicavoxelloader]]
+modId="neoforge"
+type="required"
+versionRange="[21.1.250,)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.magicavoxelloader]]
+modId="minecraft"
+type="required"
+versionRange="[1.21.1]"
+ordering="NONE"
+side="BOTH"

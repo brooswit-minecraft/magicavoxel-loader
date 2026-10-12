@@ -1,0 +1,64 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.147'
+}
+
+group = mod_group_id
+version = findProperty('mod_version') ?: project.version
+
+base { archivesName = 'magicavoxel-loader' }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+neoForge {
+    version = neo_version
+    runs {
+        client { client(); systemProperty 'neoforge.enabledGameTestNamespaces', mod_id }
+        gameTestServer { type = 'gameTestServer'; systemProperty 'neoforge.enabledGameTestNamespaces', mod_id }
+    }
+    mods { "${mod_id}" { sourceSet sourceSets.main } }
+}
+
+repositories { mavenCentral() }
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+test { useJUnitPlatform() }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = 'io.github.brooswitminecraft'
+            artifactId = 'magicavoxel-loader'
+        }
+    }
+    repositories {
+        maven {
+            name = 'GitHubPackages'
+            url = uri('https://maven.pkg.github.com/brooswit-minecraft/magicavoxel-loader')
+            credentials {
+                username = System.getenv('GITHUB_ACTOR') ?: findProperty('gpr.user')
+                password = System.getenv('GITHUB_TOKEN') ?: findProperty('gpr.key')
+            }
+        }
+    }
+}
+
+// Keep the authored fixture reviewable while packaging a real binary .vox asset.
+def generatedResources = layout.buildDirectory.dir('generated/vox-resources')
+tasks.register('materializeVoxFixture') {
+    inputs.file('src/main/resources/assets/magicavoxelloader/vox/sample.vox.hex')
+    outputs.file(generatedResources.map { it.file('assets/magicavoxelloader/vox/sample.vox') })
+    doLast {
+        // Filter, rather than split, so line wrapping in the reviewable hex fixture can never reach decodeHex.
+        def hex = file('src/main/resources/assets/magicavoxelloader/vox/sample.vox.hex').text.replaceAll('[^0-9A-Fa-f]', '')
+        def out = generatedResources.get().file('assets/magicavoxelloader/vox/sample.vox').asFile
+        out.parentFile.mkdirs(); out.bytes = java.util.HexFormat.of().parseHex(hex)
+    }
+}
+sourceSets.main.resources.srcDir(generatedResources)
+tasks.named('processResources') { dependsOn tasks.named('materializeVoxFixture') }
+tasks.named('jar') { dependsOn tasks.named('materializeVoxFixture') }
