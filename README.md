@@ -17,7 +17,7 @@ repositories {
     }
 }
 dependencies {
-    implementation 'io.github.brooswitminecraft:magicavoxel-loader:0.1.1'
+    implementation 'io.github.brooswitminecraft:magicavoxel-loader:0.1.2'
 }
 ```
 
