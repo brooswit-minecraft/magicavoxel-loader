@@ -15,6 +15,10 @@ Place an asset at `src/main/resources/assets/<your-modid>/vox/<name>.vox`. Load 
 - Palette index `0` is invalid; indices `1–255` are preserved as `#palette_<index>` material keys for the consumer's item texture/material mapping.
 - Replace an asset by editing its `.vox` file at the same resource path and rebuilding the consuming mod. No export/converter step is required. The included `sample.vox` is parsed automatically at this mod's game load.
 
+## In-game rendering
+
+The library includes `magicavoxelloader:voxel_display`, a runtime-rendered demonstration item. In a development or consumer world, run `/give @s magicavoxelloader:voxel_display`; it uses the custom item renderer to draw each voxel from the packaged `sample.vox` through Minecraft's native block-model renderer. Replacing that `.vox` resource changes the rendered voxel arrangement on the next game start—no manual export is involved.
+
 ## Verification
 
 CI runs `./gradlew test jar`, including packaged-asset loading, coordinate conversion, and invalid dimension/format behavior. The packaged jar contains `assets/magicavoxelloader/vox/sample.vox`; the corresponding native item model is available after common setup through `MagicaVoxelLoader.sampleItemModel()`.
