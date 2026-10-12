@@ -1,0 +1,10 @@
+plugins { id 'java-library' }
+repositories { mavenLocal() }
+configurations { loader }
+dependencies { loader 'io.github.brooswitminecraft:magicavoxel-loader:0.0.0' }
+tasks.register('verifyDependency') {
+    doLast {
+        def artifact = configurations.loader.singleFile
+        assert artifact.name == 'magicavoxel-loader-0.0.0.jar': "Unexpected resolved artifact: ${artifact}"
+    }
+}

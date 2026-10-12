@@ -4,7 +4,24 @@ Reusable NeoForge 21.1.250+ library/mod for Minecraft 1.21.1 that loads packaged
 
 ## Consumer use
 
-Declare `io.github.brooswitminecraft:magicavoxel-loader:<release-version>` from the repository's published Maven/release artifact, then include it as a required NeoForge mod dependency. Do not copy its parser into consumer mods.
+Declare the GitHub Packages Maven repository and dependency (a GitHub token with package-read access is required for the private package), then include it as a required NeoForge mod dependency. Do not copy its parser into consumer mods.
+
+```groovy
+repositories {
+    maven {
+        url = uri('https://maven.pkg.github.com/brooswit-minecraft/magicavoxel-loader')
+        credentials {
+            username = providers.gradleProperty('gpr.user').get()
+            password = providers.gradleProperty('gpr.key').get()
+        }
+    }
+}
+dependencies {
+    implementation 'io.github.brooswitminecraft:magicavoxel-loader:0.1.1'
+}
+```
+
+CI publishes the build to Maven Local and resolves this exact coordinate from `consumer-stub` before accepting a change. Tagged releases publish the same versioned coordinate to GitHub Packages and attach the JAR to the GitHub Release.
 
 Place an asset at `src/main/resources/assets/<your-modid>/vox/<name>.vox`. Load it at common setup with `VoxAssetLoader.load(...)`, then pass the resulting `VoxelModel` to `MinecraftItemModelConverter.convert(...)`; the output is Minecraft's native item-model element coordinate space and is suitable for the item-model bake/render integration.
 
