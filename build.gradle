@@ -60,5 +60,19 @@ tasks.register('materializeVoxFixture') {
     }
 }
 sourceSets.main.resources.srcDir(generatedResources)
-tasks.named('processResources') { dependsOn tasks.named('materializeVoxFixture') }
+tasks.named('processResources') {
+    dependsOn tasks.named('materializeVoxFixture')
+
+    // NeoForge reads this descriptor from the packaged JAR, so expand the
+    // release properties while resources are processed rather than relying on
+    // runtime substitution that does not exist for a published artifact.
+    def descriptorProperties = [
+        loader_version_range: loader_version_range,
+        file                : [jarVersion: project.version]
+    ]
+    inputs.properties(descriptorProperties)
+    filesMatching('META-INF/neoforge.mods.toml') {
+        expand(descriptorProperties)
+    }
+}
 tasks.named('jar') { dependsOn tasks.named('materializeVoxFixture') }

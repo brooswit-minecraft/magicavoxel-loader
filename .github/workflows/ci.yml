@@ -8,4 +8,12 @@ jobs:
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '21' }
       - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x gradlew && ./gradlew test jar publishToMavenLocal && ./gradlew -p consumer-stub verifyDependency
+      - name: Test, package, and verify consumer dependency
+        run: chmod +x gradlew && ./gradlew test jar publishToMavenLocal && ./gradlew -p consumer-stub verifyDependency
+      - name: Verify expanded NeoForge metadata in the exact packaged JAR
+        run: |
+          descriptor="$(unzip -p build/libs/magicavoxel-loader-0.0.0.jar META-INF/neoforge.mods.toml)"
+          test -n "$descriptor"
+          ! grep -F '${' <<<"$descriptor"
+          grep -Fx 'loaderVersion="[1,)"' <<<"$descriptor"
+          grep -Fx 'version="0.0.0"' <<<"$descriptor"
